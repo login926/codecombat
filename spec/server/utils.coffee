@@ -23,6 +23,7 @@ moment = require 'moment'
 Classroom = require '../../server/models/Classroom'
 TrialRequest = require '../../server/models/TrialRequest'
 APIClient = require '../../server/models/APIClient'
+Clan = require '../../server/models/Clan'
 campaignSchema = require '../../app/schemas/models/campaign.schema'
 campaignLevelProperties = _.keys(campaignSchema.properties.levels.additionalProperties.properties)
 campaignAdjacentCampaignProperties = _.keys(campaignSchema.properties.adjacentCampaigns.additionalProperties.properties)
@@ -375,6 +376,13 @@ module.exports = mw =
       expect(res.statusCode).toBe(201)
       TrialRequest.findById(res.body._id).exec done
 
+  makeClan: (data={}, sources={}) -> co ->
+    data.name ?= _.uniqueId('My Clan')
+    [res] = yield request.postAsync {url: mw.getUrl('/db/clan'), json: data }
+    expect(res.statusCode).toBe(200)
+    clan = yield Clan.findById(res.body._id)
+    return clan
+    
   createDay: (offset) ->
     day = new Date()
     day.setUTCDate(day.getUTCDate() + offset)
