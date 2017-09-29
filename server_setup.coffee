@@ -179,12 +179,12 @@ setupCountryTaggingMiddleware = (app) ->
 #reqHost = (req.hostname ? req.host ? '').toLowerCase()  # Work around express 3.0
 #return req.country is country and reqHost not in hosts and reqHost.indexOf(config.unsafeContentHostname) is -1
 
-  app.use (req, res, next) ->
-    if shouldRedirectToCountryServer(req) and hosts.length
-      res.writeHead 302, "Location": 'http://' + hosts[0] + req.url
-      res.end()
-    else
-      next()
+ # app.use (req, res, next) ->
+ #   if shouldRedirectToCountryServer(req) and hosts.length
+ #     res.writeHead 302, "Location": 'http://' + hosts[0] + req.url
+ #     res.end()
+ #   else
+ #     next()
 
 setupOneSecondDelayMiddleware = (app) ->
   if(config.slow_down)
@@ -214,10 +214,10 @@ setupMiddlewareToSendOldBrowserWarningWhenPlayersViewLevelDirectly = (app) ->
     return next() if req.query['try-old-browser-anyway'] or not isOldBrowser req
     res.sendfile(path.join(__dirname, 'public', 'index_old_browser.html'))
 
-setupRedirectMiddleware = (app) ->
-  app.all '/account/profile/*', (req, res, next) ->
-    nameOrID = req.path.split('/')[3]
-    res.redirect 301, "/user/#{nameOrID}/profile"
+#setupRedirectMiddleware = (app) ->
+#  app.all '/account/profile/*', (req, res, next) ->
+#    nameOrID = req.path.split('/')[3]
+#    res.redirect 301, "/user/#{nameOrID}/profile"
 
 setupFeaturesMiddleware = (app) ->
   app.use (req, res, next) ->
@@ -308,7 +308,7 @@ exports.setupMiddleware = (app) ->
   #setupCountryRedirectMiddleware app, 'brazil', config.brazilDomain
   
   setupOneSecondDelayMiddleware app
-  setupRedirectMiddleware app
+  # setupRedirectMiddleware app
   setupAjaxCaching app
   setupJavascript404s app
 
@@ -387,24 +387,24 @@ getMandate = (app) ->
 
 setupUserDataRoute = (app) ->
 
-  shouldRedirectToCountryServer = (req, country, host) ->
-    reqHost = (req.hostname ? req.host).toLowerCase()  # Work around express 3.0
-    hosts = host.split /;/g
-    if req.country is country and reqHost not in hosts and reqHost.indexOf(config.unsafeContentHostname) is -1
-      hosts[0]
-    else
-      undefined
+  #shouldRedirectToCountryServer = (req, country, host) ->
+  #  reqHost = (req.hostname ? req.host).toLowerCase()  # Work around express 3.0
+  #  hosts = host.split /;/g
+  #  if req.country is country and reqHost not in hosts and reqHost.indexOf(config.unsafeContentHostname) is -1
+  #    hosts[0]
+  #  else
+  #    undefined
 
   app.get '/user-data', wrap (req, res) ->
     res.header 'Cache-Control', 'no-cache, no-store, must-revalidate'
     res.header 'Pragma', 'no-cache'
     res.header 'Expires', 0
 
-    targetDomain = undefined
-    targetDomain ?= shouldRedirectToCountryServer(req, 'china', config.chinaDomain)
-    targetDomain ?= shouldRedirectToCountryServer(req, 'brazil', config.brazilDomain)
+   # targetDomain = undefined
+   # targetDomain ?= shouldRedirectToCountryServer(req, 'china', config.chinaDomain)
+   # targetDomain ?= shouldRedirectToCountryServer(req, 'brazil', config.brazilDomain)
 
-    redirect = "window.location = 'https://#{targetDomain}' + window.location.pathname;" if targetDomain
+   # redirect = "window.location = 'https://#{targetDomain}' + window.location.pathname;" if targetDomain
 
 
     # IMPORTANT: If you edit here, make sure app/assets/javascripts/run-tests.js puts in placeholders for
